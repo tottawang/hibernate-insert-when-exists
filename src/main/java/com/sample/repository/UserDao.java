@@ -38,14 +38,16 @@ public class UserDao {
   //////////////////////////////////////////////////////////////////////
   // join fetch to load user with projects
 
-  public void createUser(User user) throws SQLException {
-    if (getSession()
+  public User createUser(User user) throws SQLException {
+    Object lastUser = getSession()
         .createSQLQuery("insert into account (userId, name, type) select :userId, :name, :type"
-            + " where not exists (select * from account as u where u.name = :name)")
-        .setParameter("userId", user.getUserId()).setParameter("name", user.getName())
-        .setParameter("type", user.getType()).executeUpdate() == 0) {
+            + " where not exists (select * from account as u where u.name = :name) returning *")
+        .addEntity(User.class).setParameter("userId", user.getUserId())
+        .setParameter("name", user.getName()).setParameter("type", user.getType()).uniqueResult();
+    if (lastUser == null) {
       throw new SQLException("Failed to insert");
-    }
+    } else
+      return (User) lastUser;
   }
 
   public User getUserProjectsById(Integer id) {

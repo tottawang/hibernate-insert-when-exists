@@ -1,5 +1,7 @@
 package com.sample.resources;
 
+import java.sql.SQLException;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -27,13 +29,12 @@ public class RestResource {
 
   @GET
   @Path("create-user")
-  public String createUser() {
+  public Integer createUser() throws SQLException {
     User user = new User();
-    user.setName("totta8");
-    user.setUserId(Integer.valueOf(8));
+    user.setName("name12");
+    user.setUserId(Integer.valueOf(12));
     user.setType("x");
-    userDao.createUser(user);
-    return "";
+    return userDao.createUser(user).getUserId();
   }
 
 }
